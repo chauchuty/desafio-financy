@@ -62,14 +62,14 @@ export const resolvers = {
       };
     },
 
-    createCategory(_: any, { name }: any, ctx: any) {
+    createCategory(_: any, { name, description, color, icon }: any, ctx: any) {
       const userId = requireAuth(ctx);
-      return CategoryService.create(name, userId);
+      return CategoryService.create(name, userId, description, color, icon);
     },
 
-    updateCategory(_: any, { id, name }: any, ctx: any) {
+    updateCategory(_: any, { id, name, description, color, icon }: any, ctx: any) {
       const userId = requireAuth(ctx);
-      return CategoryService.update(id, name, userId);
+      return CategoryService.update(id, name, userId, description, color, icon);
     },
 
     deleteCategory(_: any, { id }: any, ctx: any) {

@@ -1,24 +1,35 @@
 import { prisma } from "../lib/prisma";
 
 export const CategoryService = {
-  create(name: string, userId: string) {
+  create(name: string, userId: string, description?: string, color?: string, icon?: string) {
     return prisma.category.create({
-      data: { name, userId },
+      data: {
+        name,
+        userId,
+        description: description ?? "",
+        color: color ?? "emerald",
+        icon: icon ?? "tag",
+      },
     });
   },
 
-  async update(id: string, name: string, userId: string) {
-    const result = await prisma.category.updateMany({
+  async update(id: string, name: string, userId: string, description?: string, color?: string, icon?: string) {
+    const category = await prisma.category.findFirst({
       where: { id, userId },
-      data: { name },
     });
 
-    if (result.count === 0) {
+    if (!category) {
       throw new Error("Categoria não encontrada");
     }
 
-    return prisma.category.findUnique({
+    return prisma.category.update({
       where: { id },
+      data: {
+        name,
+        description: description ?? category.description,
+        color: color ?? category.color,
+        icon: icon ?? category.icon,
+      },
     });
   },
 

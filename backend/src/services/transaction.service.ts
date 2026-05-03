@@ -7,6 +7,7 @@ export const TransactionService = {
       amount: number;
       type: string;
       categoryId: string;
+      date?: string;
     },
     userId: string
   ) {
@@ -21,10 +22,22 @@ export const TransactionService = {
       throw new Error("Categoria não encontrada");
     }
 
+    const transactionData: any = {
+      title: data.title,
+      amount: data.amount,
+      type: data.type,
+      categoryId: data.categoryId,
+      userId,
+    };
+
+    if (data.date) {
+      transactionData.date = new Date(data.date);
+    }
+
     return prisma.transaction.create({
-      data: {
-        ...data,
-        userId,
+      data: transactionData,
+      include: {
+        category: true,
       },
     });
   },
@@ -35,12 +48,20 @@ export const TransactionService = {
       title: string;
       amount: number;
       type: string;
+      date?: string;
     }>,
     userId: string
   ) {
+    const updateData: any = {};
+    
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.amount !== undefined) updateData.amount = data.amount;
+    if (data.type !== undefined) updateData.type = data.type;
+    if (data.date !== undefined) updateData.date = new Date(data.date);
+    
     const result = await prisma.transaction.updateMany({
       where: { id, userId },
-      data,
+      data: updateData,
     });
 
     if (result.count === 0) {
@@ -49,6 +70,9 @@ export const TransactionService = {
 
     return prisma.transaction.findUnique({
       where: { id },
+      include: {
+        category: true,
+      },
     });
   },
 
@@ -67,12 +91,21 @@ export const TransactionService = {
   findAll(userId: string) {
     return prisma.transaction.findMany({
       where: { userId },
-    });
+      include: {
+        category: true,
+       },
+       orderBy: {
+         date: "desc",
+       },
+     });
   },
 
   findById(id: string, userId: string) {
     return prisma.transaction.findFirst({
       where: { id, userId },
+      include: {
+        category: true,
+      },
     });
   },
 };

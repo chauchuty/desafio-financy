@@ -21,6 +21,9 @@ model User {
 model Category {
   id     String @id @default(uuid())
   name   String
+  description String @default("")
+  color  String @default("emerald")
+  icon   String @default("tag")
   userId String
 
   user User @relation(fields: [userId], references: [id])
@@ -35,6 +38,7 @@ model Transaction {
   categoryId String
   userId     String
   createdAt  DateTime @default(now())
+  date       DateTime?
 
   user     User     @relation(fields: [userId], references: [id])
   category Category @relation(fields: [categoryId], references: [id])

@@ -1,12 +1,15 @@
 import "dotenv/config";
 import { ApolloServer } from "apollo-server";
-import { typeDefs } from "./schema";
+import { typeDefs, dateTimeScalar } from "./schema";
 import { resolvers } from "./resolvers";
 import { createContext } from "./context/context";
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers: {
+    ...resolvers,
+    DateTime: dateTimeScalar,
+  },
   context: createContext,
 });
 
