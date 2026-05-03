@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-import { prisma } from "../lib/prisma";
 import { generateToken } from "../utils/auth";
 import { CategoryService } from "../services/category.service";
 import { TransactionService } from "../services/transaction.service";
@@ -26,12 +25,13 @@ export const resolvers = {
 
   Mutation: {
     async register(_: any, args: any) {
-      const hash = await bcrypt.hash(args.password, 10);
+      const email = args.email?.trim().toLowerCase();
+      const password = args.password?.trim();
 
       const user = await UserService.create(
         args.name,
-        args.email,
-        hash
+        email,
+        password
       );
 
       return {
@@ -41,13 +41,20 @@ export const resolvers = {
     },
 
     async login(_: any, { email, password }: any) {
-      const user = await UserService.findByEmail(email);
+      const cleanEmail = email?.trim().toLowerCase();
+      const cleanPassword = password?.trim();
 
-      if (!user) throw new Error("Usuário não encontrado");
+      const user = await UserService.findByEmail(cleanEmail);
 
-      const valid = await bcrypt.compare(password, user.password);
+      if (!user) {
+        throw new Error("Usuário não encontrado");
+      }
 
-      if (!valid) throw new Error("Credenciais inválidas");
+      const valid = await bcrypt.compare(cleanPassword, user.password);
+
+      if (!valid) {
+        throw new Error("Credenciais inválidas");
+      }
 
       return {
         token: generateToken(user.id),
