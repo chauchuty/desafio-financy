@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { Login } from "./../pages/Login"
 import { Dashboard } from "./../pages/Dashboard"
+import { Transactions } from "./../pages/Transactions.tsx"
+import { Categories } from "./../pages/Categories.tsx"
 import { SignUp } from "../pages/SignUp";
 
 export function AppRoutes() {
@@ -9,6 +11,8 @@ export function AppRoutes() {
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/transactions" element={<Transactions />} />
+      <Route path="/categories" element={<Categories />} />
       <Route path="/signup" element={<SignUp />} />
     </Routes>
   );

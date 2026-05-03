@@ -1,11 +1,11 @@
 import { useMutation } from "@apollo/client/react";
-import { LOGIN } from "../graphql/mutations/login";
+import { REGISTER } from "./../graphql/mutations/register";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, User, LogInIcon } from "lucide-react";
-import { AuthContainer } from "../components/AuthContainer";
+import { AuthContainer } from "../components/ui/AuthContainer";
 import { Input } from "../components/Input";
-import { Button } from "../components/Button";
-import type { LoginResponse } from "../types/auth";
+import { Button } from "../components/ui/Button";
+import type { RegisterResponse } from "../types/auth";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -17,7 +17,7 @@ type FormData = {
 
 export function SignUp() {
     const navigate = useNavigate();
-    const [login, { loading }] = useMutation<LoginResponse>(LOGIN);
+    const [registerUser, { loading }] = useMutation<RegisterResponse>(REGISTER);
 
     const {
         register,
@@ -29,14 +29,15 @@ export function SignUp() {
 
     async function onSubmit(data: FormData) {
         try {
-            const response = await login({
+            const response = await registerUser({
                 variables: {
+                    name: data.name,
                     email: data.email,
                     password: data.password,
                 },
             });
 
-            const token = response.data?.login.token;
+            const token = response.data?.register.token;
 
             if (token) {
                 localStorage.setItem("token", token);
@@ -59,9 +60,9 @@ export function SignUp() {
             <Toaster position="top-center" />
             <div className="flex flex-col w-full max-w-md mx-auto px-4 md:px-0 py-8">
                 <header className="mb-8 text-center">
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                    <h2 className="text-lg md:text-2xl font-bold text-gray-900 tracking-tight">
                         Criar conta
-                    </h1>
+                    </h2>
                     <p className="text-sm md:text-base text-gray-500 mt-2">
                         Comece a controlar suas finanças ainda hoje
                     </p>

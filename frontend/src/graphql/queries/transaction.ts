@@ -7,6 +7,8 @@ export const GET_TRANSACTIONS = gql`
       title
       amount
       type
+      createdAt
+      date
       category {
         name
       }

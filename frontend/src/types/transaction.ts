@@ -8,6 +8,8 @@ export type Transaction = {
   title: string;
   amount: number;
   type: string;
+  createdAt: string;
+  date?: string;
   category?: Category;
 };
 
