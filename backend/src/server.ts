@@ -18,5 +18,5 @@ server.listen({
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     },
  }).then(({ url }) => {
-  console.log(`🚀 Server rodando em ${url}`);
+  console.log(`Server rodando em ${url}`);
 });
