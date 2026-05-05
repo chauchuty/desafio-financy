@@ -16,6 +16,19 @@ export const UserService = {
     return user;
   },
 
+  async update(id: string, name: string, email: string, password?: string) {
+    const data: any = { name, email };
+
+    if (password && password.trim()) {
+      data.password = await bcrypt.hash(password, 10);
+    }
+
+    return prisma.user.update({
+      where: { id },
+      data,
+    });
+  },
+
   findByEmail(email: string) {
     return prisma.user.findUnique({
       where: { email },

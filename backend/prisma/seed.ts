@@ -73,7 +73,6 @@ const transactions = [
 
 async function main() {
   try {
-    // Deleta dados antigos (transações e categorias primeiro por causa de foreign keys)
     await prisma.transaction.deleteMany({
       where: { userId: USER_ID },
     });
@@ -85,7 +84,6 @@ async function main() {
     });
     console.log("✓ Dados antigos removidos");
 
-    // Cria novo usuário
     const hashedPassword = await bcrypt.hash("senha123", 10);
     const user = await prisma.user.create({
       data: {
@@ -97,7 +95,6 @@ async function main() {
     });
     console.log("✓ Novo usuário criado");
 
-    // Cria categorias
     const createdCategories = await Promise.all(
       categories.map((cat) =>
         prisma.category.create({
@@ -110,7 +107,6 @@ async function main() {
     );
     console.log(`✓ ${createdCategories.length} categorias criadas`);
 
-    // Cria transações
     const categoryMap = Object.fromEntries(
       createdCategories.map((cat) => [cat.name, cat.id])
     );

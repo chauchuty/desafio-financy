@@ -43,6 +43,7 @@ export const typeDefs = gql`
   type Mutation {
     register(name: String!, email: String!, password: String!): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
+    updateUser(name: String!, email: String!, password: String): User!
 
     createCategory(name: String!, description: String, color: String, icon: String): Category!
     updateCategory(id: String!, name: String!, description: String, color: String, icon: String): Category!
@@ -87,7 +88,7 @@ export const dateTimeScalar = new GraphQLScalarType({
     throw new Error(`Cannot parse ${typeof value} as DateTime`);
   },
   parseLiteral: (ast: any) => {
-    if (ast.kind === 3) { // StringValue
+    if (ast.kind === 3) {
       return new Date(ast.value);
     }
     throw new Error(`Cannot parse ${ast.kind} as DateTime`);

@@ -62,6 +62,11 @@ export const resolvers = {
       };
     },
 
+    async updateUser(_: any, { name, email, password }: any, ctx: any) {
+      const userId = requireAuth(ctx);
+      return UserService.update(userId, name, email, password);
+    },
+
     createCategory(_: any, { name, description, color, icon }: any, ctx: any) {
       const userId = requireAuth(ctx);
       return CategoryService.create(name, userId, description, color, icon);
