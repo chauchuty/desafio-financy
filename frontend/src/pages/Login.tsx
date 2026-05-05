@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client/react";
 import { LOGIN } from "../graphql/mutations/login";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, Wallet, Coins } from "lucide-react";
+import { Mail, Lock } from "lucide-react";
 import { AuthContainer } from "../components/ui/AuthContainer";
 import { Input } from "../components/Input";
 import { Button } from "../components/ui/Button";

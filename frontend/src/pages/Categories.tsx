@@ -22,10 +22,7 @@ import ConfirmModal from "../components/ui/ConfirmModal";
 import {
   CATEGORY_DESCRIPTIONS,
   CATEGORY_ICON_IDS,
-  CATEGORY_COLOR_TONES,
-  formatCurrency,
   getCategoryColor,
-  getCategoryTone,
   getCategoryToneByColor,
   getCategoryIconById,
 } from "../components/categories/categoriesUtils";

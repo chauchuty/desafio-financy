@@ -17,8 +17,8 @@ import {
   Repeat2,
   TrendingDown,
   TrendingUp,
-  Wallet,
 } from "lucide-react";
+import { AppHeader } from "../components/ui/AppHeader.tsx";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -41,19 +41,6 @@ function isIncomeTransaction(type: string, amount: number) {
   }
 
   return amount >= 0;
-}
-
-function getInitials(name?: string) {
-  if (!name) {
-    return "CT";
-  }
-
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
 }
 
 export function Dashboard() {
@@ -105,42 +92,10 @@ export function Dashboard() {
   }
 
   const userName = meData?.me.name ?? "Usuário";
-  const userInitials = getInitials(userName);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-600 text-white shadow-sm shadow-emerald-600/20">
-              <Wallet size={20} />
-            </div>
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.35em] text-emerald-700">
-                Financy
-              </p>
-            </div>
-          </div>
-
-          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-500 md:flex">
-            <span className="flex items-center gap-2 text-emerald-700">
-              Dashboard
-            </span>
-            <Link className="transition-colors hover:text-slate-800" to="/transactions">
-              Transações
-            </Link>
-            <Link className="transition-colors hover:text-slate-800" to="/categories">
-              Categorias
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-200 text-sm font-bold text-slate-700">
-              {userInitials}
-            </div>
-          </div>
-        </div>
-      </header>
+      <AppHeader activePage="dashboard" userName={userName} />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <section className="grid gap-4 md:grid-cols-3">

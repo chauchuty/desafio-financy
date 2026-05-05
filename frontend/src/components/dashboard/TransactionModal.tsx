@@ -85,7 +85,6 @@ export function TransactionModal({ open, categories, onClose, transaction }: Tra
     }
 
     if (transaction) {
-      // Editar transação
       updateTransaction({
         variables: {
           id: transaction.id,
@@ -98,7 +97,6 @@ export function TransactionModal({ open, categories, onClose, transaction }: Tra
         onClose();
       });
     } else {
-      // Criar nova transação
       createTransaction({
         variables: {
           title: title.trim(),

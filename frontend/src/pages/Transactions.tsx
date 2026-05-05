@@ -1,17 +1,18 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { useQuery, useMutation } from "@apollo/client/react";
-import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Plus, Search, Wallet, PencilLine, Trash2, Filter, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import { useQuery } from "@apollo/client/react";
+import { ChevronLeft, ChevronRight, Plus, Search, PencilLine, Trash2, Filter, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import toast from "react-hot-toast";
 import { GET_TRANSACTIONS } from "../graphql/queries/transaction";
 import { GET_CATEGORIES } from "../graphql/queries/categories";
 import { ME } from "../graphql/queries/me";
-import { DELETE_TRANSACTION } from "../graphql/mutations/transaction";
 import type { GetTransactionsResponse } from "../types/transaction";
 import type { GetCategoriesResponse } from "../types/category";
 import type { MeResponse } from "../types/user";
 import type { Transaction } from "../types/transaction";
 import { TransactionModal } from "../components/dashboard/TransactionModal";
 import ConfirmModal from "../components/ui/ConfirmModal";
+import { AppHeader } from "../components/ui/AppHeader.tsx";
+import { transactionService } from "../services";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -53,19 +54,6 @@ function isIncomeTransaction(type: string, amount: number) {
   return amount >= 0;
 }
 
-function getInitials(name?: string) {
-  if (!name) {
-    return "CT";
-  }
-
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
-
 function getTransactionTone(index: number) {
   return TRANSACTION_TONES[index % TRANSACTION_TONES.length];
 }
@@ -74,12 +62,9 @@ export function Transactions() {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
-  const { data: transactionsData, loading: transactionsLoading } = useQuery<GetTransactionsResponse>(GET_TRANSACTIONS);
+  const { data: transactionsData, loading: transactionsLoading, refetch: refetchTransactions } = useQuery<GetTransactionsResponse>(GET_TRANSACTIONS);
   const { data: categoriesData, loading: categoriesLoading } = useQuery<GetCategoriesResponse>(GET_CATEGORIES);
   const { data: meData, loading: meLoading } = useQuery<MeResponse>(ME);
-  const [deleteTransaction] = useMutation(DELETE_TRANSACTION, {
-    refetchQueries: [{ query: GET_TRANSACTIONS }],
-  });
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("Todos");
@@ -88,7 +73,6 @@ export function Transactions() {
   const [page, setPage] = useState(1);
 
   const userName = meData?.me.name ?? "Usuário";
-  const userInitials = getInitials(userName);
 
   const transactions = transactionsData?.transactions ?? [];
   const categories = categoriesData?.categories ?? [];
@@ -168,10 +152,13 @@ export function Transactions() {
   const handleConfirmDelete = async () => {
     if (!transactionToDelete) return;
     try {
-      await deleteTransaction({ variables: { id: transactionToDelete.id } });
+      await transactionService.deleteTransaction(transactionToDelete.id);
+      toast.success("Transação deletada com sucesso");
+      await refetchTransactions();
+    } catch {
+      toast.error("Erro ao deletar transação");
+    } finally {
       setTransactionToDelete(null);
-    } catch (error) {
-      console.error("Erro ao deletar:", error);
     }
   };
 
@@ -181,36 +168,7 @@ export function Transactions() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-600 text-white shadow-sm shadow-emerald-600/20">
-              <Wallet size={20} />
-            </div>
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.35em] text-emerald-700">
-                Financy
-              </p>
-            </div>
-          </div>
-
-          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-500 md:flex">
-            <Link className="transition-colors hover:text-slate-800" to="/dashboard">
-              Dashboard
-            </Link>
-            <span className="flex items-center gap-2 text-emerald-700">
-              Transações
-            </span>
-            <Link className="transition-colors hover:text-slate-800" to="/categories">
-              Categorias
-            </Link>
-          </nav>
-
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-200 text-sm font-bold text-slate-700">
-            {userInitials}
-          </div>
-        </div>
-      </header>
+      <AppHeader activePage="transactions" userName={userName} />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <section className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

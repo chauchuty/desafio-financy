@@ -1,5 +1,5 @@
 import { Tag, Trash2, PencilLine } from "lucide-react";
-import { CATEGORY_COLOR_TONES, formatCurrency } from "./categoriesUtils";
+import { CATEGORY_COLOR_TONES } from "./categoriesUtils";
 
 export type CategoryCardData = {
   id: string;
