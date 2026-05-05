@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client/react";
-import { Link } from "react-router-dom";
-import { Plus, Wallet, Tag, Repeat2 } from "lucide-react";
+import { Plus, Tag, Repeat2 } from "lucide-react";
 import { GET_CATEGORIES } from "../graphql/queries/categories";
 import { GET_TRANSACTIONS } from "../graphql/queries/transaction";
 import { ME } from "../graphql/queries/me";
@@ -19,6 +18,7 @@ import { SummaryCard } from "../components/categories/SummaryCard";
 import { SummaryHighlight } from "../components/categories/SummaryHighlight";
 import { CategoriesSkeleton } from "../components/categories/CategoriesSkeleton";
 import ConfirmModal from "../components/ui/ConfirmModal";
+import { AppHeader } from "../components/ui/AppHeader.tsx";
 import {
   CATEGORY_DESCRIPTIONS,
   CATEGORY_ICON_IDS,
@@ -54,21 +54,7 @@ type CategoryDraft = CategoryModalInitialValues & {
   id?: string;
 };
 
-// Client-side map to remember custom colors for categories (set at create/edit time)
 const CATEGORY_COLOR_MAP: Record<string, string> = {};
-
-function getInitials(name?: string) {
-  if (!name) {
-    return "CT";
-  }
-
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
 
 export function Categories() {
   const [activeCategory, setActiveCategory] = useState<CategoryDraft | null>(null);
@@ -94,7 +80,6 @@ export function Categories() {
   const transactions = transactionsData?.transactions ?? [];
 
   const userName = meData?.me.name ?? "Usuário";
-  const userInitials = getInitials(userName);
 
   const categorySummary = useMemo(
     () =>
@@ -141,7 +126,6 @@ export function Categories() {
     const createdCategory = data?.createCategory;
 
     if (createdCategory) {
-      // remember chosen color on the client so the list reflects user's selection
       CATEGORY_COLOR_MAP[createdCategory.name] = values.color;
     }
   }
@@ -164,7 +148,6 @@ export function Categories() {
     const updatedCategory = data?.updateCategory;
 
     if (updatedCategory) {
-      // update client-side color mapping when editing
       CATEGORY_COLOR_MAP[updatedCategory.name] = values.color;
       setActiveCategory(null);
     }
@@ -175,7 +158,6 @@ export function Categories() {
 
     try {
       await deleteCategory({ variables: { id: deletingCategory.id } });
-      // clear client-side mapping for removed category
       delete CATEGORY_COLOR_MAP[deletingCategory.name];
     } finally {
       setDeletingCategory(null);
@@ -203,34 +185,7 @@ export function Categories() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-600 text-white shadow-sm shadow-emerald-600/20">
-              <Wallet size={20} />
-            </div>
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.35em] text-emerald-700">
-                Financy
-              </p>
-            </div>
-          </div>
-
-          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-500 md:flex">
-            <Link className="transition-colors hover:text-slate-800" to="/dashboard">
-              Dashboard
-            </Link>
-            <Link className="transition-colors hover:text-slate-800" to="/transactions">
-              Transações
-            </Link>
-            <span className="flex items-center gap-2 text-emerald-700">Categorias</span>
-          </nav>
-
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-200 text-sm font-bold text-slate-700">
-            {userInitials}
-          </div>
-        </div>
-      </header>
+      <AppHeader activePage="categories" userName={userName} />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <section className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

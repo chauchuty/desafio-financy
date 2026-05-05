@@ -93,7 +93,7 @@ export function AppHeader({ activePage, userName }: AppHeaderProps) {
               type="button"
               aria-haspopup="true"
               aria-expanded="false"
-              className="grid h-10 w-10 place-items-center rounded-full bg-slate-200 text-sm font-bold text-slate-700"
+              className="grid h-10 w-10 cursor-pointer place-items-center rounded-full bg-slate-200 text-sm font-bold text-slate-700"
               onClick={() => setOpen((s) => !s)}
               ref={buttonRef}
             >
@@ -103,14 +103,14 @@ export function AppHeader({ activePage, userName }: AppHeaderProps) {
 
           {open ? (
             <div ref={menuRef} className="absolute right-0 mt-2 w-40 rounded-lg border bg-white py-1 shadow-lg">
-              <Link to="/account" onClick={() => setOpen(false)} className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
+              <Link to="/account" onClick={() => setOpen(false)} className="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
                 <User size={16} />
                 Editar usuário
               </Link>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                className="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
               >
                 <LogOut size={16} />
                 Sair
