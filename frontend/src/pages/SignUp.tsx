@@ -1,33 +1,45 @@
 import { useMutation } from "@apollo/client/react";
 import { REGISTER } from "./../graphql/mutations/register";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, User, LogInIcon } from "lucide-react";
+import { Mail, Lock, User, LogInIcon, Eye, EyeOff } from "lucide-react";
 import { AuthContainer } from "../components/ui/AuthContainer";
 import { Input } from "../components/Input";
 import { Button } from "../components/ui/Button";
 import type { RegisterResponse } from "../types/auth";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 type FormData = {
     name: string;
     email: string;
     password: string;
+    confirmPassword: string;
 };
 
 export function SignUp() {
     const navigate = useNavigate();
     const [registerUser, { loading }] = useMutation<RegisterResponse>(REGISTER);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors, isSubmitted },
     } = useForm<FormData>({
         mode: "onSubmit",
     });
 
+    const passwordValue = watch("password");
+
     async function onSubmit(data: FormData) {
+        if (data.password !== data.confirmPassword) {
+            toast.error("As senhas não coincidem");
+            return;
+        }
+
         try {
             const response = await registerUser({
                 variables: {
@@ -100,14 +112,36 @@ export function SignUp() {
                         </label>
                         <Input
                             placeholder="Crie uma senha"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             icon={<Lock size={20} />}
+                            rightIcon={showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            rightIconAriaLabel={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                            onRightIconClick={() => setShowPassword((current) => !current)}
                             error={!!errors.password && isSubmitted}
                             {...register("password", { required: true, minLength: 8 })}
                         />
                         <p className="text-sm text-gray-500 mt-1">
                             A senha deve conter pelo menos 8 caracteres.
                         </p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Confirmar senha
+                        </label>
+                        <Input
+                            placeholder="Confirme sua senha"
+                            type={showConfirmPassword ? "text" : "password"}
+                            icon={<Lock size={20} />}
+                            rightIcon={showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            rightIconAriaLabel={showConfirmPassword ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"}
+                            onRightIconClick={() => setShowConfirmPassword((current) => !current)}
+                            error={!!errors.confirmPassword && isSubmitted}
+                            {...register("confirmPassword", {
+                                required: true,
+                                validate: (value) => value === passwordValue,
+                            })}
+                        />
                     </div>
 
                     <Button type="submit" disabled={loading}>

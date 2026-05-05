@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import { AppHeader } from "../components/ui/AppHeader";
 import { userService } from "../services";
 import type { User } from "../services";
@@ -14,6 +15,9 @@ export default function EditUser() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -34,6 +38,12 @@ export default function EditUser() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if ((password.trim() || confirmPassword.trim()) && password !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      return;
+    }
+
     setUpdating(true);
 
     try {
@@ -100,13 +110,44 @@ export default function EditUser() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Senha (opcional)</label>
-              <input
-                type="password"
-                className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Deixe em branco para manter a senha atual"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2 pr-11 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Deixe em branco para manter a senha atual"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((current) => !current)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Confirmar senha</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="w-full rounded-lg border border-slate-300 px-4 py-2 pr-11 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirme a nova senha"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((current) => !current)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  aria-label={showConfirmPassword ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <div className="flex gap-4 pt-4">
