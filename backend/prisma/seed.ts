@@ -82,14 +82,13 @@ async function main() {
     await prisma.user.deleteMany({
       where: { id: USER_ID },
     });
-    console.log("✓ Dados antigos removidos");
 
-    const hashedPassword = await bcrypt.hash("senha123", 10);
+    const hashedPassword = await bcrypt.hash("@!010203", 10);
     const user = await prisma.user.create({
       data: {
         id: USER_ID,
-        name: "Usuário Teste",
-        email: "teste@financy.com",
+        name: "Cesar Mauricio Chauchuty",
+        email: "chauchuty@financy.com",
         password: hashedPassword,
       },
     });
